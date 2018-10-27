@@ -1,0 +1,95 @@
+ HISTORY.DOC: lists all changes and corrections made to Compression Workshop
+=============================================================================
+ 
+HISTORY.DOC                     9-28-92
+Added this file.
+
+DEMOREST.BAS and DEMOREST.MAK   9-28-92
+Added these which were accidentally omitted from the product build (oops).
+
+  <--------------------------------- 1.01 --------------------------------->
+
+UPACKFLS.ASM                    9-29-92
+Fixed a bug where CWUnpackFiles kept eating one DOS file handle.
+
+DELARRYV.INC                    9-30-92
+Fixed a bogus EQU that caused DELARRAY.ASM to fail.
+
+  <--------------------------------- 1.02 --------------------------------->
+
+BACKUP.BAS                      10-25-92
+Fixed a problem where omitting a source path altogether defaulted to the
+root directory, rather than the current directory.
+
+Added five .ASM source files that were inadvertently omitted from the build.
+
+  <--------------------------------- 1.03 --------------------------------->
+
+BACKUP.BAS                      11-11-92
+Fixed a problem introduced in 1.03 that caused the display of file names in
+subdirectories not to be displayed properly.
+
+Added the four string array routines to the libraries (oops).
+
+INSTALL.BAS                     11-14-92
+Added code to change to the first directory files were installed to, before
+trying to run the program whose name is stored in the PROGRAM.RUN file.
+
+  <--------------------------------- 1.04 --------------------------------->
+
+READBACK.BAS                    11-28-92
+New demo program shows how to read the files contained in a backup set.
+
+  <--------------------------------- 1.05 --------------------------------->
+
+BACKUP.BAS                      12-8-92
+Changed variables named Hour, Month, Year, and Date to Hr, Mnth, Yr, and Dat
+to work with VB/DOS.  Also changed Buffer$, Zero$, and DirSect$ to be fixed-
+length, so the same code will work with either near or far strings.  Also
+added code to the Match procedure to properly handle wild cards.  Also fixed
+the code to allow restoring to the root directory of a disk.
+
+  <--------------------------------- 1.06 --------------------------------->
+
+BACKUP.BAS                      1-21-93
+Changed the volume labels from CWBACKUP### to CWB### to solve a problem with
+"Access denied" errors during backup.
+
+DOC2HELP.BAS and READHELP.BAS   1-24-93
+New utility program and support function simplifies adding on-line compressed
+help to BASIC programs.
+
+  <--------------------------------- 1.07 --------------------------------->
+
+INSTALL.*                       1-27-93
+Fixed a bug in SelectFiles where garbage would be printed if, on a multiple
+disk installation, the last highlighted choice is higher than the number of
+files on the subsequent disk.
+
+PSTRARY.ASM and PSTRARYM.ASM    2-6-93
+Fixed bug where the routines stupidly assumed all arrays start at element 0.
+
+  <--------------------------------- 1.08 --------------------------------->
+
+MSELFEXT.ASM                    12-29-93
+Fixed the bug that assigned an .EXE extension but omitted the period when
+using far strings.
+
+  <--------------------------------- 1.09 --------------------------------->
+
+BACKUP.BAS                      6-4-94
+Added code to trim Temp$ after reading the disk's volume label (near line 45
+in InsertDisk) to fix a bug that erroneously reported the wrong disk.
+
+  <--------------------------------- 1.10 --------------------------------->
+
+ACMPMAIN.ASM, ACMPMN2.ASM, ADCPMAIN.ASM, ADCMPMN2.ASM, FCMPMAIN.ASM,
+FDCPMAIN.ASM, SELFEXT.ASM       11-19-96
+Minor changes as per Fred Sexton to fix an obscure bug.
+
+  <--------------------------------- 1.11 --------------------------------->
+
+PACKFILD.ASM and PACKFILS.ASM   1-29-97
+Fixed a typo that caused CWSetMaxSize to not work properly.
+
+  <--------------------------------- 1.12 --------------------------------->

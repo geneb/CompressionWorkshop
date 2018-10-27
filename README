@@ -1,0 +1,241 @@
+     Compression Workshop README: corrections and additions to the manual
+     ====================================================================
+
+QUICK LIBRARIES REMOVED
+-----------------------
+
+Because there are now three different versions of Microsoft BASIC that the
+Compression Workshop can be used with, it is impractical for us to provide
+Quick Libraries for each of them.  The QLB.DOC file is now displayed after
+installation, showing how to create a Quick Library for your BASIC version.
+
+
+CLARIFICATIONS
+--------------
+
+It is not clear in the documentation that if you delete the last array or
+file contained within a compressed file, you cannot then add a new array or
+file.  You must instead call CWPackArray or CWPackFiles with ErrCode = 0,
+telling it to create a new file.
+
+Although the description for the string packing routines state that strings
+must be at least eight characters to be compressed, some longer strings that
+do not contain sufficient redundant characters may also not be able to be
+compressed.  This too will result in an error code of -14, which is normal.
+
+
+CHANGE TO CWBACKUP IN VER. 1.03
+-------------------------------
+
+There were two places in the code that VARSEG was used to get a string's
+segment, with a comment to use SSEG with far strings.  There are now three
+places, and they were changed to use SSEG and the comment now says to use
+VARSEG with QuickBASIC.  This way the code will work directly with PDS and
+VB-DOS, and QB 4 users receive a syntax error pointing them to that comment.
+
+
+NEW BACKUP-RELATED UTILITY
+--------------------------
+
+The demo program READBACK.BAS shows how to read the names, dates, times, and
+sizes of the files in a backup set.
+
+
+NEW HELP SYSTEM UTILITY
+-----------------------
+
+One of the ideal uses for data compression is to store the text of a help
+system on disk in compressed form, and then retrieve the individual messages
+at runtime as they are needed.  To this end, we created the DOC2HELP.BAS
+utility program and also the ReadHelp companion function in READHELP.BAS.
+
+To create a compressed help file you will first create a standard ASCII text
+file that contains each help topic in a separate paragraph, with one or more
+blank lines between paragraphs.  Next run DOC2HELP.BAS either in the BASIC
+editor or compile it as a stand-alone executable program.  DOC2HELP will read
+each line of text, combining sentences in adjacent lines, until it finds a
+blank line.  Each string is then compressed and written to a binary file, but
+with a length word preceding the compressed text.  This way the ReadHelp$
+function can quickly walk through the file to locate any help message.  The
+number of strings in the file is stored at the very beginning of the file.
+
+ReadHelp is the function that retrieves each help message, and it is in the
+READHELP.BAS file as a separate module which you'll add to your own programs.
+The ReadHelp function is also demonstrated in DOC2HELP, where it is used to
+read the messages after they are compressed to verify the file was processed
+properly.  Note that very short strings cannot be compressed.  When a message
+is encountered that is too short to be compressed, the length word is written
+as a negative value so ReadHelp will know not to try to unpack it.
+
+The syntax for ReadHelp is as follows:
+
+  Help$ = ReadHelp$(HelpFile$, StrNumber%)
+
+Here, HelpFile$ is the name of the compressed help file that was created by
+DOC2HELP.  StrNumber is either the number of the message to be retrieved, or
+zero to read the next subsequent message.  To find a message string by number
+ReadHelp$ must traverse the entire file up to the string being read.  This
+requires many read and seek file operations which, althought fast, is not as
+fast as simply reading the next available message.  If you plan to read all
+of the help messages once -- perhaps to fill a string array when your program
+first starts -- then you should use zero for the string number as shown in
+the DOC2HELP program.
+
+The first time ReadHelp is used it opens the file, and leaves it open until
+you explicitly close it by invoking ReadHelp again with a null string for the
+help file name.  Note that it is not truly necessary to close the compressed
+help file before ending your program, since DOS closes all of a program's
+open files automatically when the program ends.
+
+If an error occurs when decompressing the help message, ReadHelp returns a
+null string to indicate the problem.  To save a passed parameter the error
+number is returned in the StrNumber% variable.  All Compression Workshop
+errors have negative values, but ReadHelp will return a null string and also
+leave StrNumber unchanged if you ask for a string number greater than the
+number of strings in the file.  The proper way to test for and handle this
+"Input pas end" condition is shown near the end of the DOC2HELP program.  In
+fact, that code is added solely for demonstration purposes since the DOC2HELP
+never asks ReadHelp to retrieve a string number that doesn't already exist in
+the compressed help file.
+
+Finally, it is important to point out that compressing individual strings as
+is done by DOC2HELP is not as effective as compressing an entire file as one
+entity.  Each time a new piece of data is to be compressed, the Compression
+Workshop routines have to build a new, unique internal data table.  The size
+of the compressed file directly relates to the amount of data redundancy,
+which increases as more total data is considered.  For a typical text file,
+the Compression Workshop routines usually compress the data to less than half
+its original size.  But handling one message at a time (assuming a typical
+message length of a hundred characters or so) reduces the effectiveness to
+only about 25 percent compression.
+
+
+
+NEW STRING ARRAY ROUTINES
+-------------------------
+
+We have added four routines to compress and decompress string arrays both in
+memory and in disk files.  When compressing string arrays in memory they are
+moved to a parallel integer array.  String arrays compressed to disk are put
+in the compressed file with no intervening array, but they are stored as if
+they were one-dimension integer arrays.  Therefore CWReadIDs and CWGetDetails
+will identify them as such.  The syntax descriptions are shown following.
+
+As with all of the other Compression Workshop routines, you must call
+CWReleaseMem (with an argument of 1) after using these routines.
+
+=============================================================================
+
+CWPackStrArray
+--------------
+
+Purpose
+
+Compresses a string array and saves it in a compressed file.
+
+Syntax
+
+CALL CWPackStrArray(Array$(), ArrayID%, FileName$, ErrCode%)
+
+Where
+
+Array$()  : String array to compress
+
+ArrayID%  : Unique array identifier
+
+FileName$ : Name of compressed file
+
+ErrCode% (when calling) :
+
+            Zero = Create new compressed file (overwrite any existing)
+            Non-zero = Append to existing compressed file
+
+ErrCode% (upon return) :
+
+            Return value as listed in the section Error Codes
+
+Comments
+
+The value of ErrCode% when the call is made determines whether CWPackStrArray
+will create a new compressed file or append to an existing compressed file.
+
+=============================================================================
+
+CWPackStrArrayM
+------------------
+
+Purpose
+
+Compresses a string array to an integer array
+
+Syntax
+
+CALL CWPackStrArrayM(SArray$(), IArray%(), ErrCode%)
+
+Where
+
+SArray$() : String array to compress
+
+IArray%() : Integer array to store compressed data
+
+ErrCode%  : Return value as listed in the section Error Codes
+
+Comments
+
+The contents of the string array are compressed to the integer storage array,
+and the original string array is not changed.  The calling program can then
+erase or redimension the string array as desired.
+
+=============================================================================
+
+CWUnpackStrArray
+----------------
+
+Purpose
+
+Reads and unpacks a string array contained in a compressed file.
+
+Syntax
+
+CALL CWUnpackStrArray(Array$(), ArrayID%, FileName$, ErrCode%)
+
+Where
+
+Array$()  : String array
+
+ArrayID%  : Unique array identifier
+
+FileName$ : Name of an existing compressed file
+
+ErrCode%  : Return value as listed in the section Error Codes
+
+Comments
+
+=============================================================================
+
+CWUnpackStrArrayM
+--------------------
+
+Purpose
+
+Decompresses the data from an integer storage array to a string array.
+
+Syntax
+
+CALL CWUnpackStrArrayM(SArray$(), IArray%(), ErrCode%)
+
+Where
+
+SArray$() : String array to be filled
+
+IArray()  : Integer array containing the compressed data
+
+ErrCode%  : Return value as listed in the section Error Codes
+
+Comments
+
+The data in the integer storage array is decompressed to the string array,
+and the integer array is not changed. The calling program can then erase or
+redimension the integer array as desired.
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

@@ -1,0 +1,16 @@
+Because there are now three different versions of Microsoft BASIC that the
+Compression Workshop can be used with, it is impractical for us to provide
+Quick Libraries for each of them.  Therefore, you must create the CWSHOP.QLB
+file yourself.  This is very easy to do, as the following instructions show.
+
+Regardless of which version of BASIC you have, be sure to use the LINK.EXE
+that came with your version of BASIC.  Many people have several versions of
+LINK.EXE in their path, including the old one that comes with DOS.  If you
+are not sure which version of LINK DOS will find you should specify the full
+path to your BASIC directory, as shown in the examples below.
+
+QuickBASIC 4.5: \QB\LINK /Q CWSHOP.LIB, CWSHOP.QLB, NUL, BQLB45.LIB ;
+
+BASIC PDS 7.1:  \PDS\LINK /Q CWSHOP7.LIB, CWSHOP.QLB, NUL, QBXQLB.LIB ;
+
+Visual Basic/DOS: \VBDOS\LINK /Q CWSHOP7.LIB, CWSHOP7.QLB, NUL, VBDOSQLB.LIB ;
