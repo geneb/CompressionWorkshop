@@ -1,7 +1,8 @@
 '********** BACKUP.BAS - backup and restore subprograms and support routines
 
-'Written by Phil Weber
-'Copyright (c) 1992 Crescent Software, Inc.
+' Written by Phil Weber
+' Copyright (c) 1992 Crescent Software, Inc.
+' Released to the Public Domain on 10/26/18.
 
 'NOTE: This file must be compiled using /ah.  Otherwise you will be limited
 'to no more than 512 files in the backup set.  However, it is not necessary
@@ -1033,7 +1034,7 @@ SUB WipeDisk (Drive$) STATIC
 
     DIM Zero AS STRING * 512
     DIM DirSect AS STRING * 512
-    MID$(DirSect$, 1, 3) = "ýÿÿ"            'FD FF FF -- DO NOT TOUCH!
+    MID$(DirSect$, 1, 3) = "Ã½Ã¿Ã¿"            'FD FF FF -- DO NOT TOUCH!
 
     CALL CWDiskRoom(Drive$, Free&, Total&)
     SELECT CASE Total&
